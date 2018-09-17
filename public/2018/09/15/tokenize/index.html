@@ -18,12 +18,12 @@
     
     <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"articleBody":"\nWhat’s the easiest way you know of to tokenize an arithmetic expression in javascript? Let’s say you’re building a calculator application, and want this to happen:1234console.log(  tokenize('100-(5.4 + 2/3)*5'))// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]\nBefore you reach into your npm module bag-o-tricks, realize that this can be done in one line of javascript using a secret feature of the string split method. Behold:\n12345'100-(5.4+2/3)*5'  .split(/(-|\\+|\\/|\\*|\\(|\\))/)  .map(s =&gt; s.trim())  .filter(s =&gt; s !== '')// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]\nExcuse me? What’s that hot mess inside the split function? Let’s break it down step by step using a few examples of increasing complexity:\n\nExample 1: s.split(/-/)Pretty obvious: this splits the string s anywhere it sees the minus sign symbol -.\n12'3-2-1'.split(/-/)// [\"3\", \"2\", \"1\"]\n\nExample 2: s.split(/(-)/)The only difference from the previous example is the enclosing parens in the regex, which creates a capturing group. Here’s the key point of the entire article: If the regular expression contains capturing parentheses around the separator, then each time the separator is matched, the results of the capturing group are spliced into the output array.\n12'3-2-1'.split(/(-)/)// [\"3\", \"-\", \"2\", \"-\", \"1\"]\n\nExample 3:  s.split(/(-|\\+)/)This builds off the previous example by adding support for the addition symbol \\+. The backslash \\ is required to escape the regex. The vertical pipe | acts as an OR statement (match - OR +).\n12'3-2-1+2+3'.split(/(-|\\+)/)// [\"3\", \"-\", \"2\", \"-\", \"1\", \"+\", \"2\", \"+\", \"3\"]\n\nThe Final Boss (tying everything together)Hopefully, you now have all tools needed to understand .split(/(-|\\+|\\/|\\*|\\(|\\))/). Hope that made sense! Let me know in the comments if you liked this article, or ping me on twitter!","dateCreated":"2018-09-15T19:51:30-07:00","dateModified":"2018-09-16T16:57:23-07:00","datePublished":"2018-09-15T19:51:30-07:00","description":"\n5 minute read","headline":"An even simpler javascript tokenizer","image":["https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png"],"mainEntityOfPage":{"@type":"WebPage","@id":"http://albertywu.github.io/2018/09/15/tokenize/"},"publisher":{"@type":"Organization","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"url":"http://albertywu.github.io/2018/09/15/tokenize/","keywords":"javascript","thumbnailUrl":"https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png"}</script>
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"articleBody":"\nWhat’s the easiest way you know of to tokenize an arithmetic expression in javascript? Let’s say you’re building a calculator application, and want this to happen:1234console.log(  tokenize('100-(5.4 + 2/3)*5'))// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]\nBefore you reach into your npm module bag-o-tricks, realize that this can be done in one line of javascript using a secret feature of the string split method. Behold:\n12345'100-(5.4+2/3)*5'  .split(/(-|\\+|\\/|\\*|\\(|\\))/)  .map(s =&gt; s.trim())  .filter(s =&gt; s !== '')// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]\nExcuse me? What’s that hot mess inside the split function? Let’s break it down step by step using a few examples of increasing complexity:\n\nExample 1: s.split(/-/)Pretty obvious: this splits the string s anywhere it sees the minus sign symbol -.\n12'3-2-1'.split(/-/)// [\"3\", \"2\", \"1\"]\n\nExample 2: s.split(/(-)/)The only difference from the previous example is the enclosing parens in the regex, which creates a capturing group. Here’s the key point of the entire article: If the regular expression contains capturing parentheses around the separator, then each time the separator is matched, the results of the capturing group are spliced into the output array.\n12'3-2-1'.split(/(-)/)// [\"3\", \"-\", \"2\", \"-\", \"1\"]\n\nExample 3:  s.split(/(-|\\+)/)This builds off the previous example by adding support for the addition symbol \\+. The backslash \\ is required to escape the regex. The vertical pipe | acts as an OR statement (match - OR +).\n12'3-2-1+2+3'.split(/(-|\\+)/)// [\"3\", \"-\", \"2\", \"-\", \"1\", \"+\", \"2\", \"+\", \"3\"]\n\nThe Final Boss (tying everything together)Hopefully, you now have all tools needed to understand .split(/(-|\\+|\\/|\\*|\\(|\\))/). Hope that made sense! Let me know in the comments if you liked this article, or ping me on twitter!","dateCreated":"2018-09-15T19:51:30-07:00","dateModified":"2018-09-16T16:57:23-07:00","datePublished":"2018-09-15T19:51:30-07:00","description":"\n5 minute read","headline":"An even simpler javascript tokenizer","image":["https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png"],"mainEntityOfPage":{"@type":"WebPage","@id":"http://www.albertywu.com/2018/09/15/tokenize/"},"publisher":{"@type":"Organization","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"url":"http://www.albertywu.com/2018/09/15/tokenize/","keywords":"javascript","thumbnailUrl":"https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png"}</script>
     <meta name="description" content="5 minute read">
 <meta name="keywords" content="javascript">
 <meta property="og:type" content="blog">
 <meta property="og:title" content="An even simpler javascript tokenizer">
-<meta property="og:url" content="http://albertywu.github.io/2018/09/15/tokenize/index.html">
+<meta property="og:url" content="http://www.albertywu.com/2018/09/15/tokenize/index.html">
 <meta property="og:site_name" content="Albert Wu">
 <meta property="og:description" content="5 minute read">
 <meta property="og:locale" content="en">
@@ -329,7 +329,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Facebook">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Facebook">
                     <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
@@ -337,7 +337,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Twitter">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Twitter">
                     <i class="fab fa-twitter" aria-hidden="true"></i>
                 </a>
             </li>
@@ -345,7 +345,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Google+">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Google+">
                     <i class="fab fa-google-plus" aria-hidden="true"></i>
                 </a>
             </li>
@@ -424,7 +424,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Facebook">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Facebook">
                     <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
@@ -432,7 +432,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Twitter">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Twitter">
                     <i class="fab fa-twitter" aria-hidden="true"></i>
                 </a>
             </li>
@@ -440,7 +440,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Google+">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Google+">
                     <i class="fab fa-google-plus" aria-hidden="true"></i>
                 </a>
             </li>
@@ -473,7 +473,7 @@
             
             
             <li class="share-option">
-                <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://albertywu.github.io/2018/09/15/tokenize/">
+                <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://www.albertywu.com/2018/09/15/tokenize/">
                     <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
                 </a>
             </li>
@@ -481,7 +481,7 @@
             
             
             <li class="share-option">
-                <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://albertywu.github.io/2018/09/15/tokenize/">
+                <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://www.albertywu.com/2018/09/15/tokenize/">
                     <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
                 </a>
             </li>
@@ -489,7 +489,7 @@
             
             
             <li class="share-option">
-                <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://albertywu.github.io/2018/09/15/tokenize/">
+                <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://www.albertywu.com/2018/09/15/tokenize/">
                     <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
                 </a>
             </li>
@@ -539,7 +539,7 @@
     
         <script>
              var disqus_config = function () {
-                 this.page.url = 'http://albertywu.github.io/2018/09/15/tokenize/';
+                 this.page.url = 'http://www.albertywu.com/2018/09/15/tokenize/';
                  
                     this.page.identifier = '2018/09/15/tokenize/';
                  

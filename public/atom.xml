@@ -5,9 +5,9 @@
   <subtitle>Adventures in Javascript</subtitle>
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://albertywu.github.io/"/>
+  <link href="http://www.albertywu.com/"/>
   <updated>2018-09-16T23:57:23.700Z</updated>
-  <id>http://albertywu.github.io/</id>
+  <id>http://www.albertywu.com/</id>
   
   <author>
     <name>Albert Wu</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>An even simpler javascript tokenizer</title>
-    <link href="http://albertywu.github.io/2018/09/15/tokenize/"/>
-    <id>http://albertywu.github.io/2018/09/15/tokenize/</id>
+    <link href="http://www.albertywu.com/2018/09/15/tokenize/"/>
+    <id>http://www.albertywu.com/2018/09/15/tokenize/</id>
     <published>2018-09-16T02:51:30.000Z</published>
     <updated>2018-09-16T23:57:23.700Z</updated>
     
@@ -32,17 +32,17 @@
     
     </summary>
     
-      <category term="javascript" scheme="http://albertywu.github.io/categories/javascript/"/>
+      <category term="javascript" scheme="http://www.albertywu.com/categories/javascript/"/>
     
     
-      <category term="javascript" scheme="http://albertywu.github.io/tags/javascript/"/>
+      <category term="javascript" scheme="http://www.albertywu.com/tags/javascript/"/>
     
   </entry>
   
   <entry>
     <title>Bag it up 💰 Greedy Algorithms in Javascript</title>
-    <link href="http://albertywu.github.io/2018/09/13/greedy/"/>
-    <id>http://albertywu.github.io/2018/09/13/greedy/</id>
+    <link href="http://www.albertywu.com/2018/09/13/greedy/"/>
+    <id>http://www.albertywu.com/2018/09/13/greedy/</id>
     <published>2018-09-13T20:43:10.000Z</published>
     <updated>2018-09-17T06:14:31.284Z</updated>
     
@@ -55,14 +55,14 @@
     
     </summary>
     
-      <category term="javascript" scheme="http://albertywu.github.io/categories/javascript/"/>
+      <category term="javascript" scheme="http://www.albertywu.com/categories/javascript/"/>
     
     
-      <category term="greedy algorithm" scheme="http://albertywu.github.io/tags/greedy-algorithm/"/>
+      <category term="greedy algorithm" scheme="http://www.albertywu.com/tags/greedy-algorithm/"/>
     
-      <category term="interview question" scheme="http://albertywu.github.io/tags/interview-question/"/>
+      <category term="interview question" scheme="http://www.albertywu.com/tags/interview-question/"/>
     
-      <category term="javascript" scheme="http://albertywu.github.io/tags/javascript/"/>
+      <category term="javascript" scheme="http://www.albertywu.com/tags/javascript/"/>
     
   </entry>
   
