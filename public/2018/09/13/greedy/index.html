@@ -1,0 +1,585 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Albert Wu">
+    <title>
+        Bag it up 💰 Greedy Algorithms in Javascript - Albert Wu
+    </title>
+    <meta name="author" content="Albert Wu">
+    
+    <meta name="keywords" content="mastering javascript,front end engineering,functional programming,js,es6,node,">
+    
+    
+    
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"articleBody":"\n\n\nOverviewOne less understood idea among javascript engineers (unless you happen to be studying up for interviews) is the use of greedy algorithms. A greedy algorithm makes whatever choice seems best at the moment, and solves the subproblems that arise later. To use a visual metaphor, we put the result of each subproblem in a “bag” and then repeat with successively smaller subproblems. When the subproblem is empty (nothing left to do), we return the contents of the bag.\nAs it turns out, this strategy can lead to some very elegant solutions to practical problems. In the rest of this article, we’ll explore four seemingly different problems that have almost identical solutions  (hint: they all use a greedy algorithm). In closing, we’ll take a closer look at the structure common to all four problems. Let’s dive in!\n\nExample: coin change problem123You are given coins of different denominations and a total amount of money. Write a function that returns the smallest set of coins that sums to that amount.\nTake a moment to consider how you’d do this before continuing… (answer is right below)\n\n123456789101112131415161718192021222324/*  amount: 42  coins: [1, 5, 10, 25]  output: [25, 10, 5, 1, 1]*/function makeChange(amount, coins, bag = []) &#123;  if (amount === 0) return bag  let largestCoin = getLargestCoin(amount, coins)  return makeChange(amount - largestCoin, coins, bag.concat([largestCoin]))&#125;function getLargestCoin(amount, coins) &#123;  let sortedCoins = coins.sort((a, b) =&gt; a - b)  for (let i = sortedCoins.length - 1; i &gt;= 0; i--) &#123;    if (sortedCoins[i] &lt;= amount) return sortedCoins[i]  &#125;  throw new Error('no coin that divides amount')&#125;console.log(  makeChange(42, [1, 5, 10, 25]))// [25, 10, 5, 1, 1]\nWe keep a “bag” of coins and recursively add coins to the bag that matches our selection criteria (pick largest coin denomination that is &lt; amount). If the largest coin has value C, we add C to the bag and call makeChange with amount - C. This continues until the amount is 0, and the bag of coins is returned.\nA quick note on the expression { ...bag, ...{ [fn(array[0])]: matches } } since there’s a lot going on there. First of all, what does { ...a, ...b } mean? This is called object spreading. Think of it as smooshing together objects a and b to create a new object. So { ...bag, ...somethingElse } will combine the object bag with object somethingElse. In this case, somethingElse is the object { [fn(array[0])]: matches } which is the new group we’re inserting into the bag.\nI also explain the difference between { [key]: value } and { key: value }. Those square braces signify computed properties. You can stick any expression between the square braces, and the value of that expression will become the value of the key. So for example { [1 + 1]: 2} would be the same as { 2: 2 }.\n\nExample: groupBy1234Implement the &quot;groupBy&quot; function which takes an array A and a function F,and returns an object composed of keys generated from the results of running each element of A through F. The corresponding value of each key is an array of elements responsible for generating the key.\nTake a moment to consider how you’d do this before continuing… (answer is right below)\n\n1234567891011121314151617181920212223/*  input: [6.1, 4.2, 6.3]  function: Math.floor  output: &#123; '4': [ 4.2 ], '6': [ 6.1, 6.3 ] &#125;*/function groupBy(array, fn, bag = &#123;&#125;) &#123;  if (array.length === 0) return bag  let matches = array.filter(x =&gt; fn(x) === fn(array[0]))  let rest = array.filter(x =&gt; fn(x) !== fn(array[0]))  return (    groupBy(      rest,      fn,      &#123; ...bag, ...&#123; [fn(array[0])]: matches &#125; &#125;    )  )&#125;console.log(  groupBy([6.1, 4.2, 6.3], Math.floor))// &#123; '4': [ 4.2 ], '6': [ 6.1, 6.3 ] &#125;\nKeep a “bag” of groups and recursively add groups to the bag that match our selection criteria fn(x) === fn(array[0]). Then call groupBy on the remaining elements, with the updated bag. This continues until the original array is empty, and the bag is returned.\n\nExample: activity selection problemAnother classic problem is the activity selection problem. \n1234Imagine you are trying to schedule a room for multiple competing events, each having its own time requirements (start and end time). How do you schedule the room such that you can host the maximum number of events with no scheduling conflicts?\nTake a moment to consider how you’d do this before continuing… (answer is right below)\n\n123456789101112131415161718192021222324252627282930class Appointment &#123;  constructor(name, from, to) &#123;    this.name = name    this.from = from    this.to = to  &#125;&#125;// push new appointments onto bag one-by-one until no more appointments are leftfunction getMaxAppointments(appointments, bag = []) &#123;  if (appointments.length === 0) return bag  let selectedAppointment = appointments.sort((a, b) =&gt; a.to - b.to)[0] // sort from earliest end to latest end  let futureCandidates = appointments.filter(a =&gt; a.from &gt; selectedAppointment.to)  return getMaxAppointments(    futureCandidates,    bag.concat([selectedAppointment])  )&#125;let a1 = new Appointment('brush teeth', 0, 2)let a2 = new Appointment('wash face', 1, 3)let a3 = new Appointment('make coffee', 3, 5)let a4 = new Appointment('blowdry hair', 3, 4)let a5 = new Appointment('take shower', 4.5, 6)let a6 = new Appointment('eat cereal', 7, 10)console.log(  getMaxAppointments([a1, a2, a3, a4, a5, a6]).map(a =&gt; a.name)) // ['brush teeth', 'blowdry hair', 'take shower', 'eat cereal']\n\nExample: collect anagramsFor our final example, we’ll consider the problem of grouping anagrams.\n12345678910Given an array of strings, group anagrams together.For example:Input: [&quot;eat&quot;, &quot;tea&quot;, &quot;tan&quot;, &quot;ate&quot;, &quot;nat&quot;, &quot;bat&quot;],Output:[  [&quot;ate&quot;,&quot;eat&quot;,&quot;tea&quot;],  [&quot;nat&quot;,&quot;tan&quot;],  [&quot;bat&quot;]]\nTake a moment to consider how you’d do this before continuing… (answer is right below)\n\n12345678910111213141516171819202122// use a recursive greedy algorithm recursively to perform selectionfunction collectAnagrams(words, bag = []) &#123;  if (words.length === 0) return bag  let matches = words.filter(w =&gt; isAnagram(w, words[0]))  let rest = words.filter(w =&gt; !isAnagram(w, words[0]))  return collectAnagrams(    rest,    bag.concat([matches])  )&#125;function stringSorter(a, b) &#123; return a.localeCompare(b) &#125;function isAnagram(a, b) &#123;  let aSorted = a.toLowerCase().split('').sort(stringSorter).join('')  let bSorted = b.toLowerCase().split('').sort(stringSorter).join('')  return aSorted === bSorted&#125;let x = ['bag', 'gab', 'foo', 'abg', 'oof', 'bum']console.log(collectAnagrams(x))// [['bag', 'gab', 'abg'], ['foo', 'oof'], ['bum']]\n\nThe Common StructureSo what do all of these problems have in common? For every iteration through the loop, we select a subset of items from the input and add it to the bag. The remaining items feed through to the next iteration of the loop as the next input. When the input is empty, we return the bag.\nThe following diagram might help clarify things, using our groupBy example:\n\nIf you’re more comfortable with pseudocode, here is the pattern we used in all the previous example:\n123456789function bagItUp(things, bag = []) &#123;  if (things is empty) return bag  let thingsToPutInBag = ...  let restOfThings = ...  return bagItUp(    restOfThings,    bag + thingsToPutInBag  )  &#125;\nConnectWhat do you think? Have you solved similar problems at work or personal projects using greedy algorithms? Let me know in the comments below, or on twitter!!","dateCreated":"2018-09-13T13:43:10-07:00","dateModified":"2018-09-16T16:59:49-07:00","datePublished":"2018-09-13T13:43:10-07:00","description":"\n15 minute read","headline":"Bag it up 💰 Greedy Algorithms in Javascript","image":["https://static7.depositphotos.com/1004521/675/v/950/depositphotos_6750302-stock-illustration-money-bag.jpg"],"mainEntityOfPage":{"@type":"WebPage","@id":"http://albertywu.github.io/2018/09/13/greedy/"},"publisher":{"@type":"Organization","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"url":"http://albertywu.github.io/2018/09/13/greedy/","keywords":"greedy algorithm, interview question, javascript","thumbnailUrl":"https://static7.depositphotos.com/1004521/675/v/950/depositphotos_6750302-stock-illustration-money-bag.jpg"}</script>
+    <meta name="description" content="15 minute read">
+<meta name="keywords" content="greedy algorithm,interview question,javascript">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="Bag it up 💰 Greedy Algorithms in Javascript">
+<meta property="og:url" content="http://albertywu.github.io/2018/09/13/greedy/index.html">
+<meta property="og:site_name" content="Albert Wu">
+<meta property="og:description" content="15 minute read">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://user-images.githubusercontent.com/1920766/45563508-693f4680-b802-11e8-9891-1879d832b4ff.jpg">
+<meta property="og:updated_time" content="2018-09-16T23:59:49.053Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bag it up 💰 Greedy Algorithms in Javascript">
+<meta name="twitter:description" content="15 minute read">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/1920766/45563508-693f4680-b802-11e8-9891-1879d832b4ff.jpg">
+    
+    
+    
+    
+    
+    <meta property="og:image" content="https://www.gravatar.com/avatar/53ee1aac4ee0b5e31d0230176cca09f8?s=640" />
+    
+    
+    <meta property="og:image" content="https://static7.depositphotos.com/1004521/675/v/950/depositphotos_6750302-stock-illustration-money-bag.jpg" />
+    <meta class="swiftype" name="image" data-type="enum" content="https://static7.depositphotos.com/1004521/675/v/950/depositphotos_6750302-stock-illustration-money-bag.jpg" />
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/style-du2xmrqdqrl2ollgeiw050kpl6l4nbyz7bumjuurjgsxyopifvukebxc9lqe.min.css">
+    <!--STYLES END-->
+    
+
+    
+</head>
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a class="header-title-link" href="/ ">Albert Wu</a>
+    </div>
+    
+        
+            <a  class="header-right-picture "
+                href="#about">
+        
+        
+            <img class="header-picture" src="https://www.gravatar.com/avatar/53ee1aac4ee0b5e31d0230176cca09f8?s=90" alt="Author&#39;s picture"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a href="/#about">
+                    <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/53ee1aac4ee0b5e31d0230176cca09f8?s=110" alt="Author&#39;s picture"/>
+                </a>
+                <h4 class="sidebar-profile-name">Albert Wu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>Programming Adventures</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/ "
+                            
+                            title="Home"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-categories"
+                            
+                            title="Categories"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-tags"
+                            
+                            title="Tags"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-archives"
+                            
+                            title="Archives"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link open-algolia-search"
+                             href="#search"
+                            
+                            title="Search"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Search</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="#about"
+                            
+                            title="About"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://github.com/albertywu" target="_blank" rel="noopener" title="GitHub">
+                    
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://twitter.com/albertywu" target="_blank" rel="noopener" title="Twitter">
+                    
+                        <i class="sidebar-button-icon fab fa-twitter" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Twitter</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://www.linkedin.com/in/albert-wu-54b6244/" target="_blank" rel="noopener" title="LinkedIn">
+                    
+                        <i class="sidebar-button-icon fab fa-linkedin" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">LinkedIn</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/atom.xml"
+                            
+                            title="RSS"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            Bag it up 💰 Greedy Algorithms in Javascript
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2018-09-13T13:43:10-07:00">
+	
+		    Sep 13, 2018
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/javascript/">javascript</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <!-- excerpt -->
+<h1 id="table-of-contents">Table of Contents</h1><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Overview"><span class="toc-text">Overview</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-coin-change-problem"><span class="toc-text">Example: coin change problem</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-groupBy"><span class="toc-text">Example: groupBy</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-activity-selection-problem"><span class="toc-text">Example: activity selection problem</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Example-collect-anagrams"><span class="toc-text">Example: collect anagrams</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#The-Common-Structure"><span class="toc-text">The Common Structure</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Connect"><span class="toc-text">Connect</span></a></li></ol>
+<hr>
+<h4 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h4><p>One less understood idea among javascript engineers (unless you happen to be studying up for interviews) is the use of greedy algorithms. A <a href="https://en.wikipedia.org/wiki/Greedy_algorithm" target="_blank" rel="noopener">greedy algorithm</a> makes whatever choice seems best at the moment, and solves the subproblems that arise later. To use a visual metaphor, we put the result of each subproblem in a “bag” and then repeat with successively smaller subproblems. When the subproblem is empty (nothing left to do), we return the contents of the bag.</p>
+<p>As it turns out, this strategy can lead to some very elegant solutions to practical problems. In the rest of this article, we’ll explore four seemingly different problems that <span class="highlight-text yellow">have almost identical solutions </span> (hint: they all use a greedy algorithm). In closing, we’ll take a closer look at the structure common to all four problems. Let’s dive in!</p>
+<hr>
+<h4 id="Example-coin-change-problem"><a href="#Example-coin-change-problem" class="headerlink" title="Example: coin change problem"></a>Example: coin change problem</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">You are given coins of different denominations and a total amount of </span><br><span class="line">money. Write a function that returns the smallest set of coins that </span><br><span class="line">sums to that amount.</span><br></pre></td></tr></table></figure>
+<p>Take a moment to consider how you’d do this before continuing… (answer is right below)</p>
+<hr>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  amount: 42</span></span><br><span class="line"><span class="comment">  coins: [1, 5, 10, 25]</span></span><br><span class="line"><span class="comment">  output: [25, 10, 5, 1, 1]</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">makeChange</span>(<span class="params">amount, coins, bag = []</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (amount === <span class="number">0</span>) <span class="keyword">return</span> bag</span><br><span class="line">  <span class="keyword">let</span> largestCoin = getLargestCoin(amount, coins)</span><br><span class="line">  <span class="keyword">return</span> makeChange(amount - largestCoin, coins, bag.concat([largestCoin]))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getLargestCoin</span>(<span class="params">amount, coins</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> sortedCoins = coins.sort(<span class="function">(<span class="params">a, b</span>) =&gt;</span> a - b)</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = sortedCoins.length - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">    <span class="keyword">if</span> (sortedCoins[i] &lt;= amount) <span class="keyword">return</span> sortedCoins[i]</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'no coin that divides amount'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(</span><br><span class="line">  makeChange(<span class="number">42</span>, [<span class="number">1</span>, <span class="number">5</span>, <span class="number">10</span>, <span class="number">25</span>])</span><br><span class="line">)</span><br><span class="line"><span class="comment">// [25, 10, 5, 1, 1]</span></span><br></pre></td></tr></table></figure>
+<p>We keep a “bag” of coins and recursively add coins to the bag that matches our selection criteria <code>(pick largest coin denomination that is &lt; amount)</code>. If the largest coin has value <code>C</code>, we add <code>C</code> to the bag and call <code>makeChange</code> with <code>amount - C</code>. This continues until the <code>amount</code> is 0, and the bag of coins is returned.</p>
+<p>A quick note on the expression <code>{ ...bag, ...{ [fn(array[0])]: matches } }</code> since there’s a lot going on there. First of all, what does <code>{ ...a, ...b }</code> mean? This is called <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax#Spread_in_object_literals" target="_blank" rel="noopener">object spreading</a>. Think of it as smooshing together objects a and b to create a new object. So <code>{ ...bag, ...somethingElse }</code> will combine the object <code>bag</code> with object <code>somethingElse</code>. In this case, <code>somethingElse</code> is the object <code>{ [fn(array[0])]: matches }</code> which is the new group we’re inserting into the bag.</p>
+<p>I also explain the difference between <code>{ [key]: value }</code> and <code>{ key: value }</code>. Those square braces signify <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer#Computed_property_names" target="_blank" rel="noopener">computed properties</a>. You can stick any expression between the square braces, and the value of that expression will become the value of the key. So for example <code>{ [1 + 1]: 2}</code> would be the same as <code>{ 2: 2 }</code>.</p>
+<hr>
+<h4 id="Example-groupBy"><a href="#Example-groupBy" class="headerlink" title="Example: groupBy"></a>Example: groupBy</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Implement the &quot;groupBy&quot; function which takes an array A and a function F,</span><br><span class="line">and returns an object composed of keys generated from the results of </span><br><span class="line">running each element of A through F. The corresponding value of each key </span><br><span class="line">is an array of elements responsible for generating the key.</span><br></pre></td></tr></table></figure>
+<p>Take a moment to consider how you’d do this before continuing… (answer is right below)</p>
+<hr>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  input: [6.1, 4.2, 6.3]</span></span><br><span class="line"><span class="comment">  function: Math.floor</span></span><br><span class="line"><span class="comment">  output: &#123; '4': [ 4.2 ], '6': [ 6.1, 6.3 ] &#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">groupBy</span>(<span class="params">array, fn, bag = &#123;&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (array.length === <span class="number">0</span>) <span class="keyword">return</span> bag</span><br><span class="line">  <span class="keyword">let</span> matches = array.filter(<span class="function"><span class="params">x</span> =&gt;</span> fn(x) === fn(array[<span class="number">0</span>]))</span><br><span class="line">  <span class="keyword">let</span> rest = array.filter(<span class="function"><span class="params">x</span> =&gt;</span> fn(x) !== fn(array[<span class="number">0</span>]))</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    groupBy(</span><br><span class="line">      rest,</span><br><span class="line">      fn,</span><br><span class="line">      &#123; ...bag, ...&#123; [fn(array[<span class="number">0</span>])]: matches &#125; &#125;</span><br><span class="line">    )</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(</span><br><span class="line">  groupBy([<span class="number">6.1</span>, <span class="number">4.2</span>, <span class="number">6.3</span>], <span class="built_in">Math</span>.floor)</span><br><span class="line">)</span><br><span class="line"><span class="comment">// &#123; '4': [ 4.2 ], '6': [ 6.1, 6.3 ] &#125;</span></span><br></pre></td></tr></table></figure>
+<p>Keep a “bag” of groups and recursively add groups to the bag that match our selection criteria <code>fn(x) === fn(array[0])</code>. Then call <code>groupBy</code> on the remaining elements, with the updated bag. This continues until the original array is empty, and the bag is returned.</p>
+<hr>
+<h4 id="Example-activity-selection-problem"><a href="#Example-activity-selection-problem" class="headerlink" title="Example: activity selection problem"></a>Example: activity selection problem</h4><p>Another classic problem is the <a href="https://en.wikipedia.org/wiki/Activity_selection_problem" target="_blank" rel="noopener">activity selection problem</a>. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Imagine you are trying to schedule a room for multiple competing events, </span><br><span class="line">each having its own time requirements (start and end time). How do you </span><br><span class="line">schedule the room such that you can host the maximum number of events </span><br><span class="line">with no scheduling conflicts?</span><br></pre></td></tr></table></figure>
+<p>Take a moment to consider how you’d do this before continuing… (answer is right below)</p>
+<hr>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Appointment</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(name, from, to) &#123;</span><br><span class="line">    <span class="keyword">this</span>.name = name</span><br><span class="line">    <span class="keyword">this</span>.from = <span class="keyword">from</span></span><br><span class="line">    <span class="keyword">this</span>.to = to</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// push new appointments onto bag one-by-one until no more appointments are left</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getMaxAppointments</span>(<span class="params">appointments, bag = []</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (appointments.length === <span class="number">0</span>) <span class="keyword">return</span> bag</span><br><span class="line">  <span class="keyword">let</span> selectedAppointment = appointments.sort(<span class="function">(<span class="params">a, b</span>) =&gt;</span> a.to - b.to)[<span class="number">0</span>] <span class="comment">// sort from earliest end to latest end</span></span><br><span class="line">  <span class="keyword">let</span> futureCandidates = appointments.filter(<span class="function"><span class="params">a</span> =&gt;</span> a.from &gt; selectedAppointment.to)</span><br><span class="line">  <span class="keyword">return</span> getMaxAppointments(</span><br><span class="line">    futureCandidates,</span><br><span class="line">    bag.concat([selectedAppointment])</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> a1 = <span class="keyword">new</span> Appointment(<span class="string">'brush teeth'</span>, <span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line"><span class="keyword">let</span> a2 = <span class="keyword">new</span> Appointment(<span class="string">'wash face'</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"><span class="keyword">let</span> a3 = <span class="keyword">new</span> Appointment(<span class="string">'make coffee'</span>, <span class="number">3</span>, <span class="number">5</span>)</span><br><span class="line"><span class="keyword">let</span> a4 = <span class="keyword">new</span> Appointment(<span class="string">'blowdry hair'</span>, <span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line"><span class="keyword">let</span> a5 = <span class="keyword">new</span> Appointment(<span class="string">'take shower'</span>, <span class="number">4.5</span>, <span class="number">6</span>)</span><br><span class="line"><span class="keyword">let</span> a6 = <span class="keyword">new</span> Appointment(<span class="string">'eat cereal'</span>, <span class="number">7</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(</span><br><span class="line">  getMaxAppointments([a1, a2, a3, a4, a5, a6]).map(<span class="function"><span class="params">a</span> =&gt;</span> a.name)</span><br><span class="line">) </span><br><span class="line"><span class="comment">// ['brush teeth', 'blowdry hair', 'take shower', 'eat cereal']</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="Example-collect-anagrams"><a href="#Example-collect-anagrams" class="headerlink" title="Example: collect anagrams"></a>Example: collect anagrams</h4><p>For our final example, we’ll consider the problem of <a href="https://leetcode.com/problems/group-anagrams/description/" target="_blank" rel="noopener">grouping anagrams</a>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Given an array of strings, group anagrams together.</span><br><span class="line"></span><br><span class="line">For example:</span><br><span class="line">Input: [&quot;eat&quot;, &quot;tea&quot;, &quot;tan&quot;, &quot;ate&quot;, &quot;nat&quot;, &quot;bat&quot;],</span><br><span class="line">Output:</span><br><span class="line">[</span><br><span class="line">  [&quot;ate&quot;,&quot;eat&quot;,&quot;tea&quot;],</span><br><span class="line">  [&quot;nat&quot;,&quot;tan&quot;],</span><br><span class="line">  [&quot;bat&quot;]</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>Take a moment to consider how you’d do this before continuing… (answer is right below)</p>
+<hr>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use a recursive greedy algorithm recursively to perform selection</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">collectAnagrams</span>(<span class="params">words, bag = []</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (words.length === <span class="number">0</span>) <span class="keyword">return</span> bag</span><br><span class="line">  <span class="keyword">let</span> matches = words.filter(<span class="function"><span class="params">w</span> =&gt;</span> isAnagram(w, words[<span class="number">0</span>]))</span><br><span class="line">  <span class="keyword">let</span> rest = words.filter(<span class="function"><span class="params">w</span> =&gt;</span> !isAnagram(w, words[<span class="number">0</span>]))</span><br><span class="line">  <span class="keyword">return</span> collectAnagrams(</span><br><span class="line">    rest,</span><br><span class="line">    bag.concat([matches])</span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">stringSorter</span>(<span class="params">a, b</span>) </span>&#123; <span class="keyword">return</span> a.localeCompare(b) &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isAnagram</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> aSorted = a.toLowerCase().split(<span class="string">''</span>).sort(stringSorter).join(<span class="string">''</span>)</span><br><span class="line">  <span class="keyword">let</span> bSorted = b.toLowerCase().split(<span class="string">''</span>).sort(stringSorter).join(<span class="string">''</span>)</span><br><span class="line">  <span class="keyword">return</span> aSorted === bSorted</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> x = [<span class="string">'bag'</span>, <span class="string">'gab'</span>, <span class="string">'foo'</span>, <span class="string">'abg'</span>, <span class="string">'oof'</span>, <span class="string">'bum'</span>]</span><br><span class="line"><span class="built_in">console</span>.log(collectAnagrams(x))</span><br><span class="line"><span class="comment">// [['bag', 'gab', 'abg'], ['foo', 'oof'], ['bum']]</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="The-Common-Structure"><a href="#The-Common-Structure" class="headerlink" title="The Common Structure"></a>The Common Structure</h4><p>So what do all of these problems have in common? For every iteration through the loop, we select a subset of items from the input and add it to the bag. The remaining items feed through to the next iteration of the loop as the next input. When the input is empty, we return the bag.</p>
+<p>The following diagram might help clarify things, using our groupBy example:</p>
+<p><img src="https://user-images.githubusercontent.com/1920766/45563508-693f4680-b802-11e8-9891-1879d832b4ff.jpg" alt="visualization"></p>
+<p>If you’re more comfortable with pseudocode, here is the pattern we used in all the previous example:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bagItUp</span>(<span class="params">things, bag = []</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (things is empty) <span class="keyword">return</span> bag</span><br><span class="line">  <span class="keyword">let</span> thingsToPutInBag = ...</span><br><span class="line">  <span class="keyword">let</span> restOfThings = ...</span><br><span class="line">  <span class="keyword">return</span> bagItUp(</span><br><span class="line">    restOfThings,</span><br><span class="line">    bag + thingsToPutInBag</span><br><span class="line">  )  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Connect"><a href="#Connect" class="headerlink" title="Connect"></a>Connect</h4><p>What do you think? Have you solved similar problems at work or personal projects using greedy algorithms? Let me know in the comments below, or on <a href="https://twitter.com/albertywu" target="_blank" rel="noopener">twitter</a>!!</p>
+            
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/greedy-algorithm/">greedy algorithm</a> <a class="tag tag--primary tag--small t-link" href="/tags/interview-question/">interview question</a> <a class="tag tag--primary tag--small t-link" href="/tags/javascript/">javascript</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/15/tokenize/" data-tooltip="An even simpler javascript tokenizer" aria-label="PREVIOUS: An even simpler javascript tokenizer">
+                
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--disabled">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://albertywu.github.io/2018/09/13/greedy/" title="Share on Facebook">
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://albertywu.github.io/2018/09/13/greedy/" title="Share on Twitter">
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://albertywu.github.io/2018/09/13/greedy/" title="Share on Google+">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+                <li class="post-action">
+                    <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                        <i class="fa fa-comment"></i>
+                    </a>
+                </li>
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="Table of Contents">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+                <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2018 Albert Wu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/15/tokenize/" data-tooltip="An even simpler javascript tokenizer" aria-label="PREVIOUS: An even simpler javascript tokenizer">
+                
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--disabled">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://albertywu.github.io/2018/09/13/greedy/" title="Share on Facebook">
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://albertywu.github.io/2018/09/13/greedy/" title="Share on Twitter">
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://albertywu.github.io/2018/09/13/greedy/" title="Share on Google+">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+                <li class="post-action">
+                    <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                        <i class="fa fa-comment"></i>
+                    </a>
+                </li>
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#table-of-contents" aria-label="Table of Contents">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+    <i id="btn-close-shareoptions" class="fa fa-times"></i>
+    <ul class="share-options">
+        
+            
+            
+            <li class="share-option">
+                <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://albertywu.github.io/2018/09/13/greedy/">
+                    <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                </a>
+            </li>
+        
+            
+            
+            <li class="share-option">
+                <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://albertywu.github.io/2018/09/13/greedy/">
+                    <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                </a>
+            </li>
+        
+            
+            
+            <li class="share-option">
+                <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://albertywu.github.io/2018/09/13/greedy/">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                </a>
+            </li>
+        
+    </ul>
+</div>
+
+            
+        </div>
+        
+
+
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="https://www.gravatar.com/avatar/53ee1aac4ee0b5e31d0230176cca09f8?s=110" alt="Author&#39;s picture"/>
+        
+            <h4 id="about-card-name">Albert Wu</h4>
+        
+            <div id="about-card-bio"><p>Programming Adventures</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>Software Engineer, Teacher, Dad</p>
+
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/script-vufjrm3fmbuttogo1hxuu0w9w0sesk5iyysjuguc2hdhufot9szxg8twijry.min.js"></script>
+<!--SCRIPTS END-->
+
+    
+        <script>
+             var disqus_config = function () {
+                 this.page.url = 'http://albertywu.github.io/2018/09/13/greedy/';
+                 
+                    this.page.identifier = '2018/09/13/greedy/';
+                 
+             };
+            (function() {
+                var d = document, s = d.createElement('script');
+                var disqus_shortname = 'albertywu-github-io';
+                s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+
+
+
+    </body>
+</html>

@@ -1,0 +1,561 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Albert Wu">
+    <title>
+        An even simpler javascript tokenizer - Albert Wu
+    </title>
+    <meta name="author" content="Albert Wu">
+    
+    <meta name="keywords" content="mastering javascript,front end engineering,functional programming,js,es6,node,">
+    
+    
+    
+    <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"articleBody":"\nWhat’s the easiest way you know of to tokenize an arithmetic expression in javascript? Let’s say you’re building a calculator application, and want this to happen:1234console.log(  tokenize('100-(5.4 + 2/3)*5'))// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]\nBefore you reach into your npm module bag-o-tricks, realize that this can be done in one line of javascript using a secret feature of the string split method. Behold:\n12345'100-(5.4+2/3)*5'  .split(/(-|\\+|\\/|\\*|\\(|\\))/)  .map(s =&gt; s.trim())  .filter(s =&gt; s !== '')// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]\nExcuse me? What’s that hot mess inside the split function? Let’s break it down step by step using a few examples of increasing complexity:\n\nExample 1: s.split(/-/)Pretty obvious: this splits the string s anywhere it sees the minus sign symbol -.\n12'3-2-1'.split(/-/)// [\"3\", \"2\", \"1\"]\n\nExample 2: s.split(/(-)/)The only difference from the previous example is the enclosing parens in the regex, which creates a capturing group. Here’s the key point of the entire article: If the regular expression contains capturing parentheses around the separator, then each time the separator is matched, the results of the capturing group are spliced into the output array.\n12'3-2-1'.split(/(-)/)// [\"3\", \"-\", \"2\", \"-\", \"1\"]\n\nExample 3:  s.split(/(-|\\+)/)This builds off the previous example by adding support for the addition symbol \\+. The backslash \\ is required to escape the regex. The vertical pipe | acts as an OR statement (match - OR +).\n12'3-2-1+2+3'.split(/(-|\\+)/)// [\"3\", \"-\", \"2\", \"-\", \"1\", \"+\", \"2\", \"+\", \"3\"]\n\nThe Final Boss (tying everything together)Hopefully, you now have all tools needed to understand .split(/(-|\\+|\\/|\\*|\\(|\\))/). Hope that made sense! Let me know in the comments if you liked this article, or ping me on twitter!","dateCreated":"2018-09-15T19:51:30-07:00","dateModified":"2018-09-16T16:57:23-07:00","datePublished":"2018-09-15T19:51:30-07:00","description":"\n5 minute read","headline":"An even simpler javascript tokenizer","image":["https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png"],"mainEntityOfPage":{"@type":"WebPage","@id":"http://albertywu.github.io/2018/09/15/tokenize/"},"publisher":{"@type":"Organization","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"url":"http://albertywu.github.io/2018/09/15/tokenize/","keywords":"javascript","thumbnailUrl":"https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png"}</script>
+    <meta name="description" content="5 minute read">
+<meta name="keywords" content="javascript">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="An even simpler javascript tokenizer">
+<meta property="og:url" content="http://albertywu.github.io/2018/09/15/tokenize/index.html">
+<meta property="og:site_name" content="Albert Wu">
+<meta property="og:description" content="5 minute read">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-09-16T23:57:23.700Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="An even simpler javascript tokenizer">
+<meta name="twitter:description" content="5 minute read">
+    
+    
+    
+    
+    
+    <meta property="og:image" content="https://www.gravatar.com/avatar/53ee1aac4ee0b5e31d0230176cca09f8?s=640" />
+    
+    
+    <meta property="og:image" content="https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png" />
+    <meta class="swiftype" name="image" data-type="enum" content="https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png" />
+    
+    
+    
+    <!--STYLES-->
+    <link rel="stylesheet" href="/assets/css/style-du2xmrqdqrl2ollgeiw050kpl6l4nbyz7bumjuurjgsxyopifvukebxc9lqe.min.css">
+    <!--STYLES END-->
+    
+
+    
+</head>
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
+
+
+    
+        
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a class="header-title-link" href="/ ">Albert Wu</a>
+    </div>
+    
+        
+            <a  class="header-right-picture "
+                href="#about">
+        
+        
+            <img class="header-picture" src="https://www.gravatar.com/avatar/53ee1aac4ee0b5e31d0230176cca09f8?s=90" alt="Author&#39;s picture"/>
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
+
+
+    
+
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+            <div class="sidebar-profile">
+                <a href="/#about">
+                    <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/53ee1aac4ee0b5e31d0230176cca09f8?s=110" alt="Author&#39;s picture"/>
+                </a>
+                <h4 class="sidebar-profile-name">Albert Wu</h4>
+                
+                    <h5 class="sidebar-profile-bio"><p>Programming Adventures</p>
+</h5>
+                
+            </div>
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/ "
+                            
+                            title="Home"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-categories"
+                            
+                            title="Categories"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-tags"
+                            
+                            title="Tags"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/all-archives"
+                            
+                            title="Archives"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link open-algolia-search"
+                             href="#search"
+                            
+                            title="Search"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Search</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="#about"
+                            
+                            title="About"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://github.com/albertywu" target="_blank" rel="noopener" title="GitHub">
+                    
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://twitter.com/albertywu" target="_blank" rel="noopener" title="Twitter">
+                    
+                        <i class="sidebar-button-icon fab fa-twitter" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Twitter</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link " href="https://www.linkedin.com/in/albert-wu-54b6244/" target="_blank" rel="noopener" title="LinkedIn">
+                    
+                        <i class="sidebar-button-icon fab fa-linkedin" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">LinkedIn</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a  class="sidebar-button-link "
+                             href="/atom.xml"
+                            
+                            title="RSS"
+                        >
+                    
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            An even simpler javascript tokenizer
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2018-09-15T19:51:30-07:00">
+	
+		    Sep 15, 2018
+    	
+    </time>
+    
+        <span>in </span>
+        
+    <a class="category-link" href="/categories/javascript/">javascript</a>
+
+
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <!-- excerpt -->
+<p>What’s the easiest way you know of to tokenize an arithmetic expression in javascript? Let’s say you’re building a calculator application, and want this to happen:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(</span><br><span class="line">  tokenize(<span class="string">'100-(5.4 + 2/3)*5'</span>)</span><br><span class="line">)</span><br><span class="line"><span class="comment">// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]</span></span><br></pre></td></tr></table></figure></p>
+<p>Before you reach into your npm module bag-o-tricks, realize that this can be done in one line of javascript using a secret feature of the string <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split" target="_blank" rel="noopener">split</a> method. Behold:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'100-(5.4+2/3)*5'</span></span><br><span class="line">  .split(<span class="regexp">/(-|\+|\/|\*|\(|\))/</span>)</span><br><span class="line">  .map(<span class="function"><span class="params">s</span> =&gt;</span> s.trim())</span><br><span class="line">  .filter(<span class="function"><span class="params">s</span> =&gt;</span> s !== <span class="string">''</span>)</span><br><span class="line"><span class="comment">// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]</span></span><br></pre></td></tr></table></figure>
+<p>Excuse me? What’s that hot mess inside the <code>split</code> function? Let’s break it down step by step using a few examples of increasing complexity:</p>
+<hr>
+<h4 id="Example-1-s-split"><a href="#Example-1-s-split" class="headerlink" title="Example 1: s.split(/-/)"></a>Example 1: <code>s.split(/-/)</code></h4><p>Pretty obvious: this splits the string <code>s</code> anywhere it sees the minus sign symbol <code>-</code>.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'3-2-1'</span>.split(<span class="regexp">/-/</span>)</span><br><span class="line"><span class="comment">// ["3", "2", "1"]</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="Example-2-s-split"><a href="#Example-2-s-split" class="headerlink" title="Example 2: s.split(/(-)/)"></a>Example 2: <code>s.split(/(-)/)</code></h4><p>The only difference from the previous example is the enclosing parens in the regex, which creates a capturing group. Here’s the key point of the entire article: <span class="highlight-text yellow">If the regular expression contains capturing parentheses around the separator, then each time the separator is matched, the results of the capturing group are spliced into the output array.</span></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'3-2-1'</span>.split(<span class="regexp">/(-)/</span>)</span><br><span class="line"><span class="comment">// ["3", "-", "2", "-", "1"]</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="Example-3-s-split"><a href="#Example-3-s-split" class="headerlink" title="Example 3:  s.split(/(-|\+)/)"></a>Example 3:  <code>s.split(/(-|\+)/)</code></h4><p>This builds off the previous example by adding support for the addition symbol <code>\+</code>. The backslash <code>\</code> is required to escape the regex. The vertical pipe <code>|</code> acts as an OR statement (match <code>-</code> OR <code>+</code>).</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'3-2-1+2+3'</span>.split(<span class="regexp">/(-|\+)/</span>)</span><br><span class="line"><span class="comment">// ["3", "-", "2", "-", "1", "+", "2", "+", "3"]</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h4 id="The-Final-Boss-tying-everything-together"><a href="#The-Final-Boss-tying-everything-together" class="headerlink" title="The Final Boss (tying everything together)"></a>The Final Boss (tying everything together)</h4><p>Hopefully, you now have all tools needed to understand <code>.split(/(-|\+|\/|\*|\(|\))/)</code>. Hope that made sense! Let me know in the comments if you liked this article, or ping me on <a href="https://twitter.com/albertywu" target="_blank" rel="noopener">twitter</a>!</p>
+            
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+            <div class="post-footer-tags">
+                <span class="text-color-light text-small">TAGGED IN</span><br/>
+                
+    <a class="tag tag--primary tag--small t-link" href="/tags/javascript/">javascript</a>
+
+            </div>
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--disabled">
+                
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/13/greedy/" data-tooltip="Bag it up 💰 Greedy Algorithms in Javascript" aria-label="NEXT: Bag it up 💰 Greedy Algorithms in Javascript">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Facebook">
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Twitter">
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Google+">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+                <li class="post-action">
+                    <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                        <i class="fa fa-comment"></i>
+                    </a>
+                </li>
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+                <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2018 Albert Wu. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    <a class="post-action-btn btn btn--disabled">
+                
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/13/greedy/" data-tooltip="Bag it up 💰 Greedy Algorithms in Javascript" aria-label="NEXT: Bag it up 💰 Greedy Algorithms in Javascript">
+                
+                    <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions" aria-label="Share this post">
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Facebook">
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Twitter">
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://albertywu.github.io/2018/09/15/tokenize/" title="Share on Google+">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+                <li class="post-action">
+                    <a class="post-action-btn btn btn--default" href="#disqus_thread">
+                        <i class="fa fa-comment"></i>
+                    </a>
+                </li>
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+    <i id="btn-close-shareoptions" class="fa fa-times"></i>
+    <ul class="share-options">
+        
+            
+            
+            <li class="share-option">
+                <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://albertywu.github.io/2018/09/15/tokenize/">
+                    <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                </a>
+            </li>
+        
+            
+            
+            <li class="share-option">
+                <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://albertywu.github.io/2018/09/15/tokenize/">
+                    <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                </a>
+            </li>
+        
+            
+            
+            <li class="share-option">
+                <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://albertywu.github.io/2018/09/15/tokenize/">
+                    <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                </a>
+            </li>
+        
+    </ul>
+</div>
+
+            
+        </div>
+        
+
+
+    
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <img id="about-card-picture" src="https://www.gravatar.com/avatar/53ee1aac4ee0b5e31d0230176cca09f8?s=110" alt="Author&#39;s picture"/>
+        
+            <h4 id="about-card-name">Albert Wu</h4>
+        
+            <div id="about-card-bio"><p>Programming Adventures</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>Software Engineer, Teacher, Dad</p>
+
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+<script src="/assets/js/script-vufjrm3fmbuttogo1hxuu0w9w0sesk5iyysjuguc2hdhufot9szxg8twijry.min.js"></script>
+<!--SCRIPTS END-->
+
+    
+        <script>
+             var disqus_config = function () {
+                 this.page.url = 'http://albertywu.github.io/2018/09/15/tokenize/';
+                 
+                    this.page.identifier = '2018/09/15/tokenize/';
+                 
+             };
+            (function() {
+                var d = document, s = d.createElement('script');
+                var disqus_shortname = 'albertywu-github-io';
+                s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+    
+
+
+
+    </body>
+</html>
