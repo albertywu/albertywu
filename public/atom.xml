@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://www.albertywu.com/"/>
-  <updated>2018-09-16T23:57:23.700Z</updated>
+  <updated>2018-09-24T23:29:29.476Z</updated>
   <id>http://www.albertywu.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Subsets</title>
+    <link href="http://www.albertywu.com/2018/09/24/subsets/"/>
+    <id>http://www.albertywu.com/2018/09/24/subsets/</id>
+    <published>2018-09-24T23:24:08.000Z</published>
+    <updated>2018-09-24T23:29:29.476Z</updated>
+    
+    <content type="html"><![CDATA[<!-- excerpt --><p>Pretty, don’t you think?</p><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  write a function that returns all subsets of a given array</span></span><br><span class="line"><span class="comment">  O(2^n)</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">subsets</span>(<span class="params">array</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (array.length === <span class="number">0</span>) <span class="keyword">return</span> [[]]</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> [first, ...rest] = array</span><br><span class="line">    <span class="keyword">let</span> restSubsets = subsets(rest)</span><br><span class="line">    <span class="keyword">return</span> [</span><br><span class="line">      ...restSubsets,</span><br><span class="line">      ...restSubsets.map(<span class="function"><span class="params">subset</span> =&gt;</span> [first, ...subset])</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;2 minute read&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="javascript" scheme="http://www.albertywu.com/categories/javascript/"/>
+    
+    
+      <category term="interview question" scheme="http://www.albertywu.com/tags/interview-question/"/>
+    
+      <category term="javascript" scheme="http://www.albertywu.com/tags/javascript/"/>
+    
+  </entry>
   
   <entry>
     <title>An even simpler javascript tokenizer</title>
@@ -58,11 +83,11 @@
       <category term="javascript" scheme="http://www.albertywu.com/categories/javascript/"/>
     
     
-      <category term="javascript" scheme="http://www.albertywu.com/tags/javascript/"/>
-    
       <category term="greedy algorithm" scheme="http://www.albertywu.com/tags/greedy-algorithm/"/>
     
       <category term="interview question" scheme="http://www.albertywu.com/tags/interview-question/"/>
+    
+      <category term="javascript" scheme="http://www.albertywu.com/tags/javascript/"/>
     
   </entry>
   

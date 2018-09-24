@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Albert Wu">
     <title>
-        An even simpler javascript tokenizer - Albert Wu
+        Subsets - Albert Wu
     </title>
     <meta name="author" content="Albert Wu">
     
@@ -18,19 +18,19 @@
     
     <link rel="alternate" type="application/atom+xml" title="RSS" href="/atom.xml">
     
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"articleBody":"\nWhat’s the easiest way you know of to tokenize an arithmetic expression in javascript? Let’s say you’re building a calculator application, and want this to happen:1234console.log(  tokenize('100-(5.4 + 2/3)*5'))// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]\nBefore you reach into your npm module bag-o-tricks, realize that this can be done in one line of javascript using a secret feature of the string split method. Behold:\n12345'100-(5.4+2/3)*5'  .split(/(-|\\+|\\/|\\*|\\(|\\))/)  .map(s =&gt; s.trim())  .filter(s =&gt; s !== '')// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]\nExcuse me? What’s that hot mess inside the split function? Let’s break it down step by step using a few examples of increasing complexity:\n\nExample 1: s.split(/-/)Pretty obvious: this splits the string s anywhere it sees the minus sign symbol -.\n12'3-2-1'.split(/-/)// [\"3\", \"2\", \"1\"]\n\nExample 2: s.split(/(-)/)The only difference from the previous example is the enclosing parens in the regex, which creates a capturing group. Here’s the key point of the entire article: If the regular expression contains capturing parentheses around the separator, then each time the separator is matched, the results of the capturing group are spliced into the output array.\n12'3-2-1'.split(/(-)/)// [\"3\", \"-\", \"2\", \"-\", \"1\"]\n\nExample 3:  s.split(/(-|\\+)/)This builds off the previous example by adding support for the addition symbol \\+. The backslash \\ is required to escape the regex. The vertical pipe | acts as an OR statement (match - OR +).\n12'3-2-1+2+3'.split(/(-|\\+)/)// [\"3\", \"-\", \"2\", \"-\", \"1\", \"+\", \"2\", \"+\", \"3\"]\n\nThe Final Boss (tying everything together)Hopefully, you now have all tools needed to understand .split(/(-|\\+|\\/|\\*|\\(|\\))/). Hope that made sense! Let me know in the comments if you liked this article, or ping me on twitter!","dateCreated":"2018-09-15T19:51:30-07:00","dateModified":"2018-09-16T16:57:23-07:00","datePublished":"2018-09-15T19:51:30-07:00","description":"\n5 minute read","headline":"An even simpler javascript tokenizer","image":["https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png"],"mainEntityOfPage":{"@type":"WebPage","@id":"http://www.albertywu.com/2018/09/15/tokenize/"},"publisher":{"@type":"Organization","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"url":"http://www.albertywu.com/2018/09/15/tokenize/","keywords":"javascript","thumbnailUrl":"https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png"}</script>
-    <meta name="description" content="5 minute read">
-<meta name="keywords" content="javascript">
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"articleBody":"\nPretty, don’t you think?\n12345678910111213141516/*  write a function that returns all subsets of a given array  O(2^n)*/function subsets(array) &#123;  if (array.length === 0) return [[]]  else &#123;    let [first, ...rest] = array    let restSubsets = subsets(rest)    return [      ...restSubsets,      ...restSubsets.map(subset =&gt; [first, ...subset])    ]  &#125;&#125;","dateCreated":"2018-09-24T16:24:08-07:00","dateModified":"2018-09-24T16:29:29-07:00","datePublished":"2018-09-24T16:24:08-07:00","description":"\n2 minute read","headline":"Subsets","image":["https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Venn_diagram_-_B_is_subset_of_A.svg/210px-Venn_diagram_-_B_is_subset_of_A.svg.png"],"mainEntityOfPage":{"@type":"WebPage","@id":"http://www.albertywu.com/2018/09/24/subsets/"},"publisher":{"@type":"Organization","name":"Albert Wu","sameAs":["https://github.com/albertywu","https://twitter.com/albertywu","https://www.linkedin.com/in/albert-wu-54b6244/"]},"url":"http://www.albertywu.com/2018/09/24/subsets/","keywords":"interview question, javascript","thumbnailUrl":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Venn_diagram_-_B_is_subset_of_A.svg/210px-Venn_diagram_-_B_is_subset_of_A.svg.png"}</script>
+    <meta name="description" content="2 minute read">
+<meta name="keywords" content="interview question,javascript">
 <meta property="og:type" content="blog">
-<meta property="og:title" content="An even simpler javascript tokenizer">
-<meta property="og:url" content="http://www.albertywu.com/2018/09/15/tokenize/index.html">
+<meta property="og:title" content="Subsets">
+<meta property="og:url" content="http://www.albertywu.com/2018/09/24/subsets/index.html">
 <meta property="og:site_name" content="Albert Wu">
-<meta property="og:description" content="5 minute read">
+<meta property="og:description" content="2 minute read">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-09-16T23:57:23.700Z">
+<meta property="og:updated_time" content="2018-09-24T23:29:29.476Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="An even simpler javascript tokenizer">
-<meta name="twitter:description" content="5 minute read">
+<meta name="twitter:title" content="Subsets">
+<meta name="twitter:description" content="2 minute read">
     
     
     
@@ -39,8 +39,8 @@
     <meta property="og:image" content="https://www.gravatar.com/avatar/53ee1aac4ee0b5e31d0230176cca09f8?s=640" />
     
     
-    <meta property="og:image" content="https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png" />
-    <meta class="swiftype" name="image" data-type="enum" content="https://token.dreamteam.gg/images/xcoin.png.pagespeed.ic.ZFrZ8I2d0y.png" />
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Venn_diagram_-_B_is_subset_of_A.svg/210px-Venn_diagram_-_B_is_subset_of_A.svg.png" />
+    <meta class="swiftype" name="image" data-type="enum" content="https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Venn_diagram_-_B_is_subset_of_A.svg/210px-Venn_diagram_-_B_is_subset_of_A.svg.png" />
     
     
     
@@ -252,14 +252,14 @@
         <div class="post-header main-content-wrap text-left">
     
         <h1 class="post-title">
-            An even simpler javascript tokenizer
+            Subsets
         </h1>
     
     
         <div class="post-meta">
-    <time datetime="2018-09-15T19:51:30-07:00">
+    <time datetime="2018-09-24T16:24:08-07:00">
 	
-		    Sep 15, 2018
+		    Sep 24, 2018
     	
     </time>
     
@@ -278,21 +278,8 @@
     <div class="post-content markdown">
         <div class="main-content-wrap">
             <!-- excerpt -->
-<p>What’s the easiest way you know of to tokenize an arithmetic expression in javascript? Let’s say you’re building a calculator application, and want this to happen:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(</span><br><span class="line">  tokenize(<span class="string">'100-(5.4 + 2/3)*5'</span>)</span><br><span class="line">)</span><br><span class="line"><span class="comment">// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]</span></span><br></pre></td></tr></table></figure></p>
-<p>Before you reach into your npm module bag-o-tricks, realize that this can be done in one line of javascript using a secret feature of the string <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split" target="_blank" rel="noopener">split</a> method. Behold:</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'100-(5.4+2/3)*5'</span></span><br><span class="line">  .split(<span class="regexp">/(-|\+|\/|\*|\(|\))/</span>)</span><br><span class="line">  .map(<span class="function"><span class="params">s</span> =&gt;</span> s.trim())</span><br><span class="line">  .filter(<span class="function"><span class="params">s</span> =&gt;</span> s !== <span class="string">''</span>)</span><br><span class="line"><span class="comment">// [ '100', '-', '(', '5.4', '+', '2/3', ')', '*', '5' ]</span></span><br></pre></td></tr></table></figure>
-<p>Excuse me? What’s that hot mess inside the <code>split</code> function? Let’s break it down step by step using a few examples of increasing complexity:</p>
-<hr>
-<h4 id="Example-1-s-split"><a href="#Example-1-s-split" class="headerlink" title="Example 1: s.split(/-/)"></a>Example 1: <code>s.split(/-/)</code></h4><p>Pretty obvious: this splits the string <code>s</code> anywhere it sees the minus sign symbol <code>-</code>.</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'3-2-1'</span>.split(<span class="regexp">/-/</span>)</span><br><span class="line"><span class="comment">// ["3", "2", "1"]</span></span><br></pre></td></tr></table></figure>
-<hr>
-<h4 id="Example-2-s-split"><a href="#Example-2-s-split" class="headerlink" title="Example 2: s.split(/(-)/)"></a>Example 2: <code>s.split(/(-)/)</code></h4><p>The only difference from the previous example is the enclosing parens in the regex, which creates a capturing group. Here’s the key point of the entire article: <span class="highlight-text yellow">If the regular expression contains capturing parentheses around the separator, then each time the separator is matched, the results of the capturing group are spliced into the output array.</span></p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'3-2-1'</span>.split(<span class="regexp">/(-)/</span>)</span><br><span class="line"><span class="comment">// ["3", "-", "2", "-", "1"]</span></span><br></pre></td></tr></table></figure>
-<hr>
-<h4 id="Example-3-s-split"><a href="#Example-3-s-split" class="headerlink" title="Example 3:  s.split(/(-|\+)/)"></a>Example 3:  <code>s.split(/(-|\+)/)</code></h4><p>This builds off the previous example by adding support for the addition symbol <code>\+</code>. The backslash <code>\</code> is required to escape the regex. The vertical pipe <code>|</code> acts as an OR statement (match <code>-</code> OR <code>+</code>).</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'3-2-1+2+3'</span>.split(<span class="regexp">/(-|\+)/</span>)</span><br><span class="line"><span class="comment">// ["3", "-", "2", "-", "1", "+", "2", "+", "3"]</span></span><br></pre></td></tr></table></figure>
-<hr>
-<h4 id="The-Final-Boss-tying-everything-together"><a href="#The-Final-Boss-tying-everything-together" class="headerlink" title="The Final Boss (tying everything together)"></a>The Final Boss (tying everything together)</h4><p>Hopefully, you now have all tools needed to understand <code>.split(/(-|\+|\/|\*|\(|\))/)</code>. Hope that made sense! Let me know in the comments if you liked this article, or ping me on <a href="https://twitter.com/albertywu" target="_blank" rel="noopener">twitter</a>!</p>
+<p>Pretty, don’t you think?</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">  write a function that returns all subsets of a given array</span></span><br><span class="line"><span class="comment">  O(2^n)</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">subsets</span>(<span class="params">array</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (array.length === <span class="number">0</span>) <span class="keyword">return</span> [[]]</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> [first, ...rest] = array</span><br><span class="line">    <span class="keyword">let</span> restSubsets = subsets(rest)</span><br><span class="line">    <span class="keyword">return</span> [</span><br><span class="line">      ...restSubsets,</span><br><span class="line">      ...restSubsets.map(<span class="function"><span class="params">subset</span> =&gt;</span> [first, ...subset])</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
             
 
         </div>
@@ -302,7 +289,7 @@
             <div class="post-footer-tags">
                 <span class="text-color-light text-small">TAGGED IN</span><br/>
                 
-    <a class="tag tag--primary tag--small t-link" href="/tags/javascript/">javascript</a>
+    <a class="tag tag--primary tag--small t-link" href="/tags/interview-question/">interview question</a> <a class="tag tag--primary tag--small t-link" href="/tags/javascript/">javascript</a>
 
             </div>
         
@@ -312,8 +299,7 @@
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/24/subsets/" data-tooltip="Subsets" aria-label="PREVIOUS: Subsets">
+                    <a class="post-action-btn btn btn--disabled">
                 
                     <i class="fa fa-angle-left" aria-hidden="true"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
@@ -322,7 +308,7 @@
             <li class="post-action">
                 
                     
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/13/greedy/" data-tooltip="Bag it up 💰 Greedy Algorithms in Javascript" aria-label="NEXT: Bag it up 💰 Greedy Algorithms in Javascript">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/15/tokenize/" data-tooltip="An even simpler javascript tokenizer" aria-label="NEXT: An even simpler javascript tokenizer">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
                     <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -340,7 +326,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Facebook">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://www.albertywu.com/2018/09/24/subsets/" title="Share on Facebook">
                     <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
@@ -348,7 +334,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Twitter">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://www.albertywu.com/2018/09/24/subsets/" title="Share on Twitter">
                     <i class="fab fa-twitter" aria-hidden="true"></i>
                 </a>
             </li>
@@ -356,7 +342,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Google+">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://www.albertywu.com/2018/09/24/subsets/" title="Share on Google+">
                     <i class="fab fa-google-plus" aria-hidden="true"></i>
                 </a>
             </li>
@@ -408,8 +394,7 @@
         <ul class="post-actions post-action-nav">
             <li class="post-action">
                 
-                    
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/24/subsets/" data-tooltip="Subsets" aria-label="PREVIOUS: Subsets">
+                    <a class="post-action-btn btn btn--disabled">
                 
                     <i class="fa fa-angle-left" aria-hidden="true"></i>
                     <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
@@ -418,7 +403,7 @@
             <li class="post-action">
                 
                     
-                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/13/greedy/" data-tooltip="Bag it up 💰 Greedy Algorithms in Javascript" aria-label="NEXT: Bag it up 💰 Greedy Algorithms in Javascript">
+                    <a class="post-action-btn btn btn--default tooltip--top" href="/2018/09/15/tokenize/" data-tooltip="An even simpler javascript tokenizer" aria-label="NEXT: An even simpler javascript tokenizer">
                 
                     <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
                     <i class="fa fa-angle-right" aria-hidden="true"></i>
@@ -436,7 +421,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Facebook">
+                <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://www.albertywu.com/2018/09/24/subsets/" title="Share on Facebook">
                     <i class="fab fa-facebook" aria-hidden="true"></i>
                 </a>
             </li>
@@ -444,7 +429,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Twitter">
+                <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=http://www.albertywu.com/2018/09/24/subsets/" title="Share on Twitter">
                     <i class="fab fa-twitter" aria-hidden="true"></i>
                 </a>
             </li>
@@ -452,7 +437,7 @@
             
             
             <li class="post-action hide-xs">
-                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://www.albertywu.com/2018/09/15/tokenize/" title="Share on Google+">
+                <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=http://www.albertywu.com/2018/09/24/subsets/" title="Share on Google+">
                     <i class="fab fa-google-plus" aria-hidden="true"></i>
                 </a>
             </li>
@@ -485,7 +470,7 @@
             
             
             <li class="share-option">
-                <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://www.albertywu.com/2018/09/15/tokenize/">
+                <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=http://www.albertywu.com/2018/09/24/subsets/">
                     <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
                 </a>
             </li>
@@ -493,7 +478,7 @@
             
             
             <li class="share-option">
-                <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://www.albertywu.com/2018/09/15/tokenize/">
+                <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=http://www.albertywu.com/2018/09/24/subsets/">
                     <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
                 </a>
             </li>
@@ -501,7 +486,7 @@
             
             
             <li class="share-option">
-                <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://www.albertywu.com/2018/09/15/tokenize/">
+                <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=http://www.albertywu.com/2018/09/24/subsets/">
                     <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
                 </a>
             </li>
@@ -551,9 +536,9 @@
     
         <script>
              var disqus_config = function () {
-                 this.page.url = 'http://www.albertywu.com/2018/09/15/tokenize/';
+                 this.page.url = 'http://www.albertywu.com/2018/09/24/subsets/';
                  
-                    this.page.identifier = '2018/09/15/tokenize/';
+                    this.page.identifier = '2018/09/24/subsets/';
                  
              };
             (function() {
